@@ -1,88 +1,501 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Computação em Nuvem I - Atividade Prática</title>
+    <title>Tiago | Cloud Computing Workspace & Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f172a;
-            --surface: #1e293b;
-            --text: #f8fafc;
+            --bg-base: #060913;
+            --bg-card: rgba(15, 23, 42, 0.7);
+            --bg-card-hover: rgba(30, 41, 59, 0.85);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(56, 189, 248, 0.35);
+            --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --border: #334155;
-            --accent: #38bdf8;
+            --accent-cyan: #38bdf8;
+            --accent-emerald: #10b981;
+            --accent-indigo: #6366f1;
+            --accent-purple: #a855f7;
+            --glow-cyan: rgba(56, 189, 248, 0.15);
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); line-height: 1.6; padding: 2rem 1rem; }
-        .container { max-width: 800px; margin: 0 auto; }
-        header { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
-        h1 { color: var(--accent); font-size: 1.8rem; margin-bottom: 0.5rem; }
-        .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
-        .meta-item span { display: block; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; }
-        .meta-item strong { font-size: 1.05rem; color: var(--text); }
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; }
-        h2 { color: var(--accent); font-size: 1.4rem; margin-bottom: 1rem; }
-        p { margin-bottom: 1rem; color: #cbd5e1; }
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
-        .feature-box { background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
-        .feature-box h3 { color: #38bdf8; font-size: 1rem; margin-bottom: 0.5rem; }
-        .feature-box p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0; }
-        footer { text-align: center; margin-top: 2rem; font-size: 0.85rem; color: var(--text-muted); }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .ambient-glow {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; overflow: hidden;
+        }
+        .glow-1 {
+            position: absolute; width: 600px; height: 600px; top: -150px; left: -100px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, rgba(99, 102, 241, 0) 70%);
+            border-radius: 50%; filter: blur(60px);
+        }
+        .glow-2 {
+            position: absolute; width: 650px; height: 650px; top: 20%; right: -200px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(56, 189, 248, 0) 70%);
+            border-radius: 50%; filter: blur(80px);
+        }
+
+        .wrapper {
+            position: relative; z-index: 1; max-width: 1100px; margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+        }
+        /* Header */
+        .top-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+        }
+        .brand-badge {
+            display: flex; align-items: center; gap: 0.75rem;
+            font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted);
+        }
+        .brand-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-indigo));
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 700; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+        }
+        .status-pill {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.4rem 0.9rem; border-radius: 9999px;
+            background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25);
+            font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-emerald);
+        }
+        .pulse-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background-color: var(--accent-emerald); box-shadow: 0 0 10px var(--accent-emerald);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        /* Hero */
+        .hero { margin-bottom: 2.5rem; }
+        .hero-tagline {
+            display: inline-block; font-family: var(--font-mono); font-size: 0.75rem;
+            text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent-cyan);
+            margin-bottom: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 6px;
+            background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+        .hero h1 {
+            font-size: 2.6rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.15;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #ffffff, #94a3b8, #38bdf8);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-lead { font-size: 1.1rem; color: var(--text-muted); max-width: 750px; }
+
+        /* Author Meta Card */
+        .author-card {
+            background: var(--bg-card); backdrop-filter: blur(16px);
+            border: 1px solid var(--border-subtle); border-radius: 14px;
+            padding: 1.25rem 1.75rem; display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem; margin-bottom: 2.5rem; position: relative; overflow: hidden;
+        }
+        .author-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-purple));
+        }
+        .meta-lbl {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: var(--text-muted); margin-bottom: 0.2rem; font-family: var(--font-mono);
+        }
+        .meta-val { font-size: 1.1rem; font-weight: 700; color: #fff; }
+        /* Tabs */
+        .nav-tabs {
+            display: flex; gap: 0.6rem; margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; overflow-x: auto;
+        }
+        .tab-btn {
+            background: transparent; border: none; color: var(--text-muted);
+            font-family: var(--font-sans); font-size: 0.9rem; font-weight: 600;
+            padding: 0.5rem 1.1rem; border-radius: 8px; cursor: pointer;
+            transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.5rem;
+            white-space: nowrap;
+        }
+        .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.05); }
+        .tab-btn.active {
+            color: var(--accent-cyan); background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.3); box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Bento Grid */
+        .bento-grid {
+            display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.25rem; margin-bottom: 2rem;
+        }
+        .bento-card {
+            background: var(--bg-card); backdrop-filter: blur(14px);
+            border: 1px solid var(--border-subtle); border-radius: 14px;
+            padding: 1.5rem; transition: all 0.25s ease; position: relative;
+        }
+        .bento-card:hover {
+            border-color: var(--border-highlight); transform: translateY(-3px);
+            box-shadow: 0 10px 25px -10px rgba(0,0,0,0.5), 0 0 20px var(--glow-cyan);
+            background: var(--bg-card-hover);
+        }
+        .col-12 { grid-column: span 12; }
+        .col-8  { grid-column: span 8; }
+        .col-4  { grid-column: span 4; }
+        .col-6  { grid-column: span 6; }
+
+        @media (max-width: 900px) {
+            .col-8, .col-4, .col-6 { grid-column: span 12; }
+            .hero h1 { font-size: 2.1rem; }
+        }
+
+        .card-tag {
+            display: inline-block; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600;
+            color: var(--accent-cyan); background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.2); padding: 0.15rem 0.5rem;
+            border-radius: 5px; margin-bottom: 0.75rem;
+        }
+        .card-tag.emerald { color: var(--accent-emerald); background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); }
+        .card-tag.purple { color: var(--accent-purple); background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.2); }
+
+        .bento-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.6rem; color: #fff; }
+        .bento-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.55; }
+
+        .metric-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 1.25rem; }
+        .metric-item {
+            background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); border-radius: 8px;
+            padding: 0.75rem; text-align: center;
+        }
+        .metric-val { font-family: var(--font-mono); font-size: 1.3rem; font-weight: 700; color: var(--accent-cyan); }
+        .metric-lbl { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-top: 0.2rem; }
+
+        /* Matrix Table */
+        .matrix-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 1rem; }
+        .matrix-table th, .matrix-table td { padding: 0.75rem 0.9rem; text-align: left; border-bottom: 1px solid var(--border-subtle); }
+        .matrix-table th { color: #fff; background: rgba(255,255,255,0.03); font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; }
+        .pill-c { font-size: 0.7rem; font-family: var(--font-mono); padding: 0.1rem 0.45rem; border-radius: 4px; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .pill-p { font-size: 0.7rem; font-family: var(--font-mono); padding: 0.1rem 0.45rem; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        /* Arch Flow */
+        .arch-flow {
+            background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); border-radius: 12px;
+            padding: 1.25rem; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+            gap: 1.25rem; margin-top: 1.25rem;
+        }
+        @media (max-width: 768px) { .arch-flow { grid-template-columns: 1fr; } }
+        .arch-box { background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1rem; }
+        .arch-box.priv { border-left: 3px solid var(--accent-indigo); }
+        .arch-box.pub { border-left: 3px solid var(--accent-cyan); }
+        .arch-box h4 { font-size: 0.95rem; color: #fff; margin-bottom: 0.4rem; }
+        .arch-box ul { list-style: none; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+        footer {
+            margin-top: 3.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle);
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+            gap: 1rem; color: var(--text-muted); font-size: 0.8rem;
+        }
+        footer a { color: var(--accent-cyan); text-decoration: none; }
+        footer a:hover { color: #fff; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Computação em Nuvem I</h1>
-            <p>Atividade de Pesquisa e Prática — Publicação na Nuvem (Hands-On)</p>
-            <div class="meta">
-                <div class="meta-item">
-                    <span>Estudante</span>
-                    <strong>Tiago</strong>
+    <div class="ambient-glow">
+        <div class="glow-1"></div>
+        <div class="glow-2"></div>
+    </div>
+    <div class="wrapper">        <!-- Header -->
+        <header class="top-bar">
+            <div class="brand-badge">
+                <div class="brand-icon">T</div>
+                <div>
+                    <strong style="color: #fff; display: block;">CLOUD//TIAGO</strong>
+                    <span>Computação em Nuvem I &bull; Lab Hands-on</span>
                 </div>
-                <div class="meta-item">
-                    <span>Turma / Período</span>
-                    <strong>Computação em Nuvem I</strong>
-                </div>
-                <div class="meta-item">
-                    <span>Ambiente de Hospedagem</span>
-                    <strong>GitHub Pages (PaaS)</strong>
-                </div>
+            </div>
+            <div class="status-pill">
+                <div class="pulse-dot"></div>
+                <span>PAAS ACTIVE &bull; GITHUB PAGES &bull; SA-EAST-1</span>
             </div>
         </header>
 
-        <section class="card">
-            <h2>O que é Computação em Nuvem?</h2>
-            <p>
-                Segundo o <strong>NIST SP 800-145</strong>, a computação em nuvem é um modelo para viabilizar o acesso sob demanda e via rede a um pool compartilhado de recursos computacionais configuráveis (servidores, armazenamento e redes) que podem ser rapidamente provisionados com o mínimo de esforço de gerenciamento.
+        <!-- Hero -->
+        <section class="hero">
+            <span class="hero-tagline">Pesquisa e Prática Aplicada</span>
+            <h1>Arquitetura, Modelos de Serviço &amp; Ecossistema Cloud</h1>
+            <p class="hero-lead">
+                Plataforma interativa com os fundamentos do <strong>NIST SP 800-145</strong>, matriz comparativa de modelos de serviço (IaaS, PaaS, SaaS) e desenho de arquitetura híbrida hospitalar.
             </p>
-            <div class="features-grid">
-                <div class="feature-box">
-                    <h3>1. Autoatendimento sob Demanda</h3>
-                    <p>Provisionamento autônomo e imediato sem interação com operadores humanos.</p>
+        </section>
+
+        <!-- Profile Card -->
+        <div class="author-card">
+            <div>
+                <div class="meta-lbl">Discente</div>
+                <div class="meta-val">Tiago</div>
+            </div>
+            <div>
+                <div class="meta-lbl">Componente Curricular</div>
+                <div class="meta-val">Computação em Nuvem I</div>
+            </div>
+            <div>
+                <div class="meta-lbl">Ambiente de Deploy</div>
+                <div class="meta-val" style="color: var(--accent-cyan);">PaaS (Jamstack / Edge)</div>
+            </div>
+            <div>
+                <div class="meta-lbl">Framework Conceitual</div>
+                <div class="meta-val" style="color: var(--accent-emerald);">NIST SP 800-145 / LGPD</div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('tab-nist')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                5 Pilares do NIST
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-models')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                IaaS vs PaaS vs SaaS
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-hybrid')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                Estudo de Caso Híbrido
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-handson')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                Evidências do Deploy
+            </button>
+        </nav>        <!-- TAB 1: NIST ESSENTIALS -->
+        <div id="tab-nist" class="tab-content active">
+            <div class="bento-grid">
+                <div class="bento-card col-8">
+                    <span class="card-tag">Pilar 01 &bull; Autonomia</span>
+                    <h3>Autoatendimento sob Demanda</h3>
+                    <p>
+                        Provisionamento autônomo e imediato de poder computacional (instâncias EC2, discos EBS, redes VPC) diretamente via console web, CLI ou chamadas de API, sem intermediação de atendentes comerciais ou operadores do provedor.
+                    </p>
+                    <div class="metric-row">
+                        <div class="metric-item">
+                            <div class="metric-val">&lt; 60s</div>
+                            <div class="metric-lbl">Lead Time de VM</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-val">100%</div>
+                            <div class="metric-lbl">API Automation</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-val">Zero</div>
+                            <div class="metric-lbl">Intervenção Manual</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="feature-box">
-                    <h3>2. Amplo Acesso à Rede</h3>
-                    <p>Acessibilidade multiplataforma por protocolos universais de comunicação.</p>
+
+                <div class="bento-card col-4">
+                    <span class="card-tag emerald">Pilar 02 &bull; Onipresença</span>
+                    <h3>Amplo Acesso à Rede</h3>
+                    <p>
+                        Disponibilidade ubíqua por meio de protocolos de internet abertos e universais (HTTPS/TLS), viabilizando consumo transparente a partir de navegadores web, smartphones, laptops corporativos e dispositivos IoT.
+                    </p>
                 </div>
-                <div class="feature-box">
-                    <h3>3. Pool de Recursos</h3>
-                    <p>Infraestrutura multi-inquilino com alocação dinâmica e isolamento seguro.</p>
+
+                <div class="bento-card col-4">
+                    <span class="card-tag purple">Pilar 03 &bull; Multi-Tenant</span>
+                    <h3>Pool de Recursos</h3>
+                    <p>
+                        Consolidação e alocação dinâmica de hardware compartilhado entre clientes distintos, blindado por isolamento físico em microchips de hypervisor (ex.: AWS Nitro) e redes virtuais isoladas.
+                    </p>
                 </div>
-                <div class="feature-box">
-                    <h3>4. Elasticidade Rápida</h3>
-                    <p>Capacidade de escalabilidade contínua e automática acompanhando o tráfego.</p>
+
+                <div class="bento-card col-4">
+                    <span class="card-tag">Pilar 04 &bull; Escalabilidade</span>
+                    <h3>Elasticidade Rápida</h3>
+                    <p>
+                        Ajuste automatizado de capacidade computacional (scale-out / scale-in) orientado por limiares de tráfego em tempo real, conferindo a percepção de recursos virtualmente infinitos.
+                    </p>
                 </div>
-                <div class="feature-box">
-                    <h3>5. Serviço Mensurável</h3>
-                    <p>Telemetria e controle de uso para faturamento transparente por consumo.</p>
+
+                <div class="bento-card col-4">
+                    <span class="card-tag emerald">Pilar 05 &bull; Telemetria</span>
+                    <h3>Serviço Mensurável</h3>
+                    <p>
+                        Bilhetagem transparente no modelo pay-as-you-go, aferida com precisão cirúrgica por segundos de processamento, GB de armazenamento ou requisições consumidas.
+                    </p>
                 </div>
             </div>
-        </section>
+        </div>
+
+        <!-- TAB 2: SERVICE MODELS -->
+        <div id="tab-models" class="tab-content">
+            <div class="bento-card col-12">
+                <span class="card-tag purple">Responsabilidade Compartilhada</span>
+                <h3>IaaS vs. PaaS vs. SaaS: Matriz Operacional</h3>
+                <p>
+                    A separação dos modelos delimita onde termina a governança do cliente e onde inicia a sustentação do provedor de nuvem.
+                </p>
+
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th>Camada Arquitetural</th>
+                            <th>IaaS (ex.: EC2, VMs)</th>
+                            <th>PaaS (ex.: GitHub Pages)</th>
+                            <th>SaaS (ex.: Salesforce, M365)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Aplicações &amp; Código</strong></td>
+                            <td><span class="pill-c">Cliente</span></td>
+                            <td><span class="pill-c">Cliente</span></td>
+                            <td><span class="pill-p">Provedor</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dados &amp; Acessos</strong></td>
+                            <td><span class="pill-c">Cliente</span></td>
+                            <td><span class="pill-c">Cliente</span></td>
+                            <td><span class="pill-c">Cliente (Acessos)</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Runtime &amp; Middleware</strong></td>
+                            <td><span class="pill-c">Cliente</span></td>
+                            <td><span class="pill-p">Provedor</span></td>
+                            <td><span class="pill-p">Provedor</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sistema Operacional &amp; Patches</strong></td>
+                            <td><span class="pill-c">Cliente</span></td>
+                            <td><span class="pill-p">Provedor</span></td>
+                            <td><span class="pill-p">Provedor</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Virtualização &amp; Hardware</strong></td>
+                            <td><span class="pill-p">Provedor</span></td>
+                            <td><span class="pill-p">Provedor</span></td>
+                            <td><span class="pill-p">Provedor</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data Center Físico &amp; Energia</strong></td>
+                            <td><span class="pill-p">Provedor</span></td>
+                            <td><span class="pill-p">Provedor</span></td>
+                            <td><span class="pill-p">Provedor</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>        <!-- TAB 3: HYBRID ARCHITECTURE CASE STUDY -->
+        <div id="tab-hybrid" class="tab-content">
+            <div class="bento-card col-12">
+                <span class="card-tag emerald">Estudo de Caso &bull; Setor Hospitalar</span>
+                <h3>Topologia Híbrida: Conformidade LGPD &amp; Elasticidade</h3>
+                <p>
+                    Solução que concilia a custódia estrita de prontuários eletrônicos protegidos pela LGPD com a elasticidade necessária para absorver picos de telemedicina e agendamento web.
+                </p>
+
+                <div class="arch-flow">
+                    <div class="arch-box priv">
+                        <h4>🔒 Nuvem Privada (On-Premise)</h4>
+                        <ul>
+                            <li>&bull; Banco de Prontuários (PEP)</li>
+                            <li>&bull; Custódia de Chaves HSM (BYOK)</li>
+                            <li>&bull; Imagens Médicas DICOM/PACS</li>
+                            <li>&bull; Latência em rede local &lt; 5ms</li>
+                            <li>&bull; <strong>LGPD Art. 5º (Dados Sensíveis)</strong></li>
+                        </ul>
+                    </div>
+
+                    <div style="text-align: center; font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-emerald);">
+                        <span>Túnel Seguro</span>
+                        <div style="width: 70px; height: 2px; background: linear-gradient(to right, var(--accent-indigo), var(--accent-cyan)); margin: 0.4rem auto;"></div>
+                        <span>IPsec / mTLS</span>
+                    </div>
+
+                    <div class="arch-box pub">
+                        <h4>☁️ Nuvem Pública (AWS / Azure)</h4>
+                        <ul>
+                            <li>&bull; Portal de Agendamento Online</li>
+                            <li>&bull; Salas Virtuais de Telemedicina</li>
+                            <li>&bull; Servidor de Vídeo WebRTC</li>
+                            <li>&bull; Auto Scaling dinâmico</li>
+                            <li>&bull; <strong>Absorção de picos externos</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: DEPLOY EVIDENCE -->
+        <div id="tab-handson" class="tab-content">
+            <div class="bento-grid">
+                <div class="bento-card col-8">
+                    <span class="card-tag">Prática 2 &bull; Justificativa Técnica</span>
+                    <h3>Por que esta página é PaaS?</h3>
+                    <p style="margin-bottom: 0.8rem;">
+                        Esta aplicação foi publicada através do <strong>GitHub Pages</strong>, enquadrando-se com clareza no modelo <strong>PaaS (Plataforma como Serviço)</strong>.
+                    </p>
+                    <p style="margin-bottom: 0.8rem;">
+                        <strong>Responsabilidade do Desenvolvedor (Tiago):</strong> Restrita exclusivamente à concepção do código-fonte (HTML5/CSS3/JavaScript), responsividade e ao apontamento da branch de publicação no repositório.
+                    </p>
+                    <p>
+                        <strong>Responsabilidade do Provedor:</strong> Provisionamento automático de servidores web de borda (Nginx), emissão contínua de certificados criptográficos SSL/TLS para HTTPS, orquestração de pipeline de CI/CD (GitHub Actions), mitigação perimetral contra ataques DDoS e distribuição por CDN global.
+                    </p>
+                </div>
+
+                <div class="bento-card col-4">
+                    <span class="card-tag purple">Telemetria da Instância</span>
+                    <h3>Especificações do Deploy</h3>
+                    <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); line-height: 2;">
+                        <div>&bull; Host: <code>tiagow2.github.io</code></div>
+                        <div>&bull; Protocolo: <code>HTTP/2 + TLS 1.3</code></div>
+                        <div>&bull; Repositório: <code>Computa-o-em-Nuvem</code></div>
+                        <div>&bull; Gestão de Infra: <code>100% Abstraída</code></div>
+                    </div>
+                    <div style="margin-top: 1.25rem;">
+                        <a href="https://github.com/tiagow2/Computa-o-em-Nuvem" target="_blank" style="display: block; text-align: center; padding: 0.6rem; border-radius: 6px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: var(--accent-cyan); text-decoration: none; font-weight: 600; font-size: 0.85rem;">
+                            Ver Repositório &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
         <footer>
-            <p>&copy; 2026 — Atividade Acadêmica de Computação em Nuvem I</p>
+            <div>
+                &copy; 2026 <strong>Tiago</strong> &bull; Atividade de Computação em Nuvem I
+            </div>
+            <div>
+                <a href="https://github.com/tiagow2/Computa-o-em-Nuvem" target="_blank">Repositório GitHub</a>
+            </div>
         </footer>
     </div>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            const clickedBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+            if (clickedBtn) clickedBtn.classList.add('active');
+
+            const target = document.getElementById(tabId);
+            if (target) target.classList.add('active');
+        }
+    </script>
 </body>
 </html>
